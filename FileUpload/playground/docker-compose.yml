@@ -1,0 +1,38 @@
+services:
+  mysql:
+    image: mysql
+    container_name: mysql-container
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: playground
+    networks:
+      - playground-network
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p1234"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  spring:
+    build:
+      context: .
+    container_name: playground-container
+    depends_on:
+      mysql:
+        condition: service_healthy  # 💡 mysql이 healthy해야 spring 시작됨
+    networks:
+      - playground-network
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/playground?serverTimezone=Asia/Seoul
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 1234
+      FLAG: FLAG{this_is_test_flag}
+
+networks:
+  playground-network:
+    driver: bridge
