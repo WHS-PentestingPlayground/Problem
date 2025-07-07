@@ -35,3 +35,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# uploads 폴더 내 파일은 무시, 폴더는 유지
+src/main/webapp/uploads/*
+!src/main/webapp/uploads/.gitkeep
