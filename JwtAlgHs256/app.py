@@ -67,7 +67,7 @@ def init_db():
     # admin 계정이 없으면 생성
     cursor.execute("SELECT * FROM users WHERE username = 'admin'")
     if not cursor.fetchone():
-        cursor.execute("INSERT INTO users (username, password, role) VALUES ('admin', 'admin123', 'admin')")
+        cursor.execute("INSERT INTO users (username, password, role) VALUES ('admin', 'A3Min0712!', 'admin')")
     
     # 일반 사용자 계정이 없으면 생성
     cursor.execute("SELECT * FROM users WHERE username = 'user'")
@@ -122,36 +122,97 @@ def require_auth(f):
 def index():
     html = '''
     <!DOCTYPE html>
-    <html>
+    <html lang="ko">
     <head>
+        <meta charset="UTF-8">
         <title>JWT CTF Challenge</title>
         <style>
-            body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
-            .container { background: #f5f5f5; padding: 20px; border-radius: 10px; margin: 20px 0; }
-            .flag { background: #ffeb3b; padding: 10px; border-radius: 5px; margin: 10px 0; }
-            input, button { padding: 10px; margin: 5px; border-radius: 5px; border: 1px solid #ddd; }
-            button { background: #007bff; color: white; cursor: pointer; }
-            button:hover { background: #0056b3; }
+            body {
+                background-color: #1e1e1e;
+                color: #ffffff;
+                font-family: 'Segoe UI', sans-serif;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 50px 20px;
+            }
+
+            h1 {
+                font-size: 2.5em;
+                color: #00ff88;
+                margin-bottom: 20px;
+            }
+
+            .container {
+                background-color: #2b2b2b;
+                padding: 30px;
+                border-radius: 15px;
+                box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+                width: 100%;
+                max-width: 400px;
+                margin-top: 50px;
+            }
+
+            input {
+                width: 100%;
+                padding: 12px;
+                margin: 10px 0;
+                border: none;
+                border-radius: 8px;
+                font-size: 1em;
+                box-sizing: border-box;
+            }
+
+            button {
+                width: 100%;
+                padding: 12px;
+                margin-top: 10px;
+                font-size: 1em;
+                background-color: #00ff88;
+                color: #1e1e1e;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: background-color 0.2s;
+            }
+
+            button:hover {
+                background-color: #00cc6e;
+            }
+
+            #adminBtn {
+                display: none;
+                margin-top: 20px;
+                background-color: #ffc107;
+                color: #000;
+            }
+
+            #user-header {
+                margin-top: 30px;
+                font-size: 1.1em;
+                color: #ccc;
+            }
         </style>
     </head>
     <body>
-        <h1>🔐 Secure Login System</h1>
-        <div id="user-header" style="text-align: center; margin: 20px 0; font-size: 18px; color: #666;">
-            안녕하세요! 로그인해주세요.
-        </div>
-        
+
+        <h1>🔐 JWT CTF Challenge</h1>
+
+        <div id="user-header">관리자 권한을 획득하세요.</div>
+
         <div class="container">
             <h2>🔑 로그인</h2>
             <input type="text" id="username" placeholder="사용자명" value="user">
             <input type="password" id="password" placeholder="비밀번호" value="user123">
             <button onclick="login()">로그인</button>
+            <button id="adminBtn" onclick="checkAdmin()">🔓 관리자 페이지로 이동</button>
         </div>
 
         <script>
             function login() {
                 const username = document.getElementById('username').value;
                 const password = document.getElementById('password').value;
-                
+
                 fetch('/login', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
@@ -160,7 +221,9 @@ def index():
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        document.getElementById('user-header').innerHTML = '안녕하세요 <strong>' + username + '</strong>님!';
+                        document.getElementById('user-header').innerHTML =
+                            `안녕하세요 <strong>${username}</strong>님!`;
+                        document.getElementById('adminBtn').style.display = 'block';
                         alert('로그인 성공!');
                     } else {
                         alert('로그인 실패: ' + data.error);
@@ -169,20 +232,13 @@ def index():
             }
 
             function checkAdmin() {
-                fetch('/admin')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert(data.flag);
-                    } else {
-                        alert('Admin 권한이 없습니다: ' + data.error);
-                    }
-                });
+                window.location.href = '/admin';  // HTML 페이지로 이동
             }
-
         </script>
+
     </body>
     </html>
+
     '''
     return html
 
@@ -256,20 +312,57 @@ def jwks():
     
     return jsonify(jwks)
 
+
 @app.route('/admin')
 @require_auth
 def admin():
     if request.user.get('role') == 'admin':
-        return jsonify({
-            'success': True,
-            'flag': 'flag{JwtAlgHs256_problem_is_solved_gooooooood}',
-            'message': '축하합니다! JWT 알고리즘 우회 공격을 성공했습니다!'
-        })
+        html = '''
+        <!DOCTYPE html>
+        <html lang="ko">
+        <head>
+            <meta charset="UTF-8">
+            <title>FLAG 획득!</title>
+            <style>
+                body {
+                    background-color: #1e1e1e;
+                    color: #00ff88;
+                    font-family: 'Courier New', monospace;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100vh;
+                    margin: 0;
+                }
+
+                .flag-box {
+                    border: 2px dashed #00ff88;
+                    padding: 30px 40px;
+                    font-size: 28px;
+                    background-color: #2b2b2b;
+                    border-radius: 12px;
+                    box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+                    animation: glow 1.5s infinite alternate;
+                }
+
+                @keyframes glow {
+                    from { box-shadow: 0 0 10px #00ff88; }
+                    to { box-shadow: 0 0 25px #00ff88; }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="flag-box">
+                VUL{JwtAlgHs256_problem_is_solved_gooooooood}
+            </div>
+        </body>
+        </html>
+
+        '''
+        return render_template_string(html)
     else:
-        return jsonify({
-            'success': False,
-            'error': 'Admin 권한이 필요합니다'
-        }), 403
+        return render_template_string("<h1>403 Forbidden</h1><p>Admin 권한이 필요합니다.</p>"), 403
+
 
 if __name__ == '__main__':
     init_db()
