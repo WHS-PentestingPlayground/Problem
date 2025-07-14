@@ -1,0 +1,28 @@
+services:
+  db:
+    build: ./mysql
+    container_name: vulunch-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpw
+      MYSQL_DATABASE: vulunchDB
+      MYSQL_USER: vulunch
+      MYSQL_PASSWORD: vulunch
+    volumes:
+      - ./mysql/my.cnf:/etc/mysql/my.cnf
+      - ./flag:/flag:ro
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    command: --secure-file-priv=""
+    restart: unless-stopped
+
+  ssh:
+    build: ./ssh
+    container_name: vulunch-ssh
+    ports:
+      - "22222:22"
+    volumes:
+      - ./flag:/flag:ro
+    restart: unless-stopped
+
+networks:
+  default:
+    driver: bridge
