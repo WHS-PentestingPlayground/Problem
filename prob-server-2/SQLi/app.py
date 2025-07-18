@@ -1,7 +1,6 @@
 from flask import Flask, request, render_template_string
 import pymysql
 import os
-import traceback
 
 app = Flask(__name__)
 
