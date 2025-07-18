@@ -51,8 +51,6 @@ def index():
                 else:
                     message = f"환영합니다, {result.get('username', '유저')}"
         except Exception as e:
-            print("[!] 예외 발생:")
-            traceback.print_exc()
             message = "서버 처리 중 오류가 발생했습니다."
         finally:
             try:

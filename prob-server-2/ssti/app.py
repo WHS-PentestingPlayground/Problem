@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template_string, abort
+from flask import Flask, request, render_template_string
 
 import os
 
@@ -23,7 +23,7 @@ def index():
 @app.route('/greet')
 def greet():
     name = request.args.get('name', '')
-    # 취약점: 사용자 입력을 템플릿에 직접 렌더링
+    
     template = f"Hello, {name}!"
     return render_template_string(template)
 
