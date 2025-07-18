@@ -1,0 +1,19 @@
+services:
+  spring4shell-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: spring4shell
+    ports:
+      - "8080:8080"              # 외부에서 접근 가능
+    restart: unless-stopped
+    read_only: false              # 보안 강화
+    security_opt:
+      - no-new-privileges:true   # 보안 강화
+    tmpfs:
+      - /tmp                     # 임시 디렉토리를 메모리로
+    environment:
+      - TZ=Asia/Seoul
+
+    volumes:
+      - ./logs:/usr/local/tomcat/logs
