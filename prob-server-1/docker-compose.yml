@@ -8,8 +8,6 @@ services:
       MYSQL_DATABASE: playground
     networks:
       - prob1-net
-    ports:
-      - "3307:3306"
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p1234"]
       interval: 10s
@@ -44,8 +42,70 @@ services:
     ports:
       - "5000:5000"
 
+  prob3-mysql:
+    image: mysql:8.0
+    container_name: prob3-mysql-container
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: jwt_ctf
+    command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+    networks:
+      - prob3-net
+
+  prob3-flask:
+    build:
+      context: ./JwtAlgHs256
+      dockerfile: Dockerfile
+    container_name: prob3-flask-container
+    depends_on:
+      prob3-mysql:
+        condition: service_healthy
+    environment:
+      - FLASK_ENV=development
+    networks:
+      - prob3-net
+    ports:
+      - "5001:5000"
+    restart: unless-stopped
+
+  prob4-mysql:
+    build: ./mysqlRCE/mysql
+    container_name: prob4-mysql-container
+    environment:
+      MYSQL_ROOT_PASSWORD: ROpasswd!!34
+      MYSQL_DATABASE: vulunchDB
+      MYSQL_USER: vulunch
+      MYSQL_PASSWORD: vulunch
+    volumes:
+      - ./mysqlRCE/mysql/my.cnf:/etc/mysql/my.cnf
+      - ./mysqlRCE/flag:/flag:ro
+      - ./mysqlRCE/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    command: --secure-file-priv=""
+    restart: unless-stopped
+    networks:
+      - prob4-net
+
+  prob4-ssh:
+    build: ./mysqlRCE/ssh
+    container_name: prob4-ssh-container
+    volumes:
+      - ./mysqlRCE/flag:/flag:ro
+    restart: unless-stopped
+    networks:
+      - prob4-net
+    ports:
+      - "22222:22"
+
 networks:
   prob1-net:
     driver: bridge
   prob2-net:
+    driver: bridge
+  prob3-net:
+    driver: bridge
+  prob4-net:
     driver: bridge

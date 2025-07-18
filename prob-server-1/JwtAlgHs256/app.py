@@ -41,7 +41,7 @@ public_key = serialization.load_pem_public_key(public_key_pem, backend=default_b
 
 # MySQL 연결 설정
 db_config = {
-    'host': 'mysql',  # Docker 서비스 이름 사용
+    'host': 'prob3-mysql',  # Docker 서비스 이름 사용
     'user': 'root',
     'password': 'password',
     'database': 'jwt_ctf'

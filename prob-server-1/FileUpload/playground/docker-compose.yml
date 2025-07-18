@@ -22,7 +22,7 @@ services:
     container_name: playground-container
     depends_on:
       mysql:
-        condition: service_healthy  # 💡 mysql이 healthy해야 spring 시작됨
+        condition: service_healthy 
     networks:
       - playground-network
     ports:
@@ -31,7 +31,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/playground?serverTimezone=Asia/Seoul
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: 1234
-      FLAG: FLAG{this_is_test_flag}
+      FLAG: VUL{my_little_s0da_flag}
 
 networks:
   playground-network:

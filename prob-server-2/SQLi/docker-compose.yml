@@ -1,0 +1,22 @@
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_USER=whsRoot
+      - DB_PASSWORD=Rootpass123
+      - DB_NAME=sqli_lab
+    volumes:
+      - ./flag.txt:/app/flag.txt
+
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: Rootpass123
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
