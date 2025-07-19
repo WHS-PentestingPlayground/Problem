@@ -17,10 +17,13 @@ services:
   ssh:
     build: ./ssh
     container_name: vulunch-ssh
+    environment:
+      MYSQL_DATABASE: vulunchDB
+      MYSQL_USER: vulunch
+      MYSQL_PASSWORD: vulunch
     ports:
       - "22222:22"
     volumes:
-      - ./flag:/flag:ro
     restart: unless-stopped
 
 networks:

@@ -30,7 +30,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://prob1-mysql:3306/playground?serverTimezone=Asia/Seoul
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: 1234
-      FLAG: FLAG{this_is_test_flag}
+      FLAG: VUL{my_little_s0da_flag}
 
   prob2-flask:
     build:
@@ -92,8 +92,6 @@ services:
   prob4-ssh:
     build: ./mysqlRCE/ssh
     container_name: prob4-ssh-container
-    volumes:
-      - ./mysqlRCE/flag:/flag:ro
     restart: unless-stopped
     networks:
       - prob4-net
