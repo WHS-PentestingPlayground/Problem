@@ -15,28 +15,21 @@ RUN chmod +x ./gradlew && \
     dos2unix ./gradlew || sed -i 's/\r$//' ./gradlew && \
     ./gradlew clean war --no-daemon -x test
 
-#################### 🚀 Run Stage (cron 포함) #########
+#################### 🚀 Run Stage ####################
 FROM tomcat:9.0.53-jdk17-openjdk
 ENV TZ=Asia/Seoul
 
-# 1️⃣ 유틸리티 + cron 설치
+# 1️⃣ 유틸리티 설치
 RUN apt-get update && \
-    apt-get install -y curl wget netcat python3 bash cron && \
+    apt-get install -y curl wget netcat python3 bash && \
     rm -rf /var/lib/apt/lists/*   # 이미지 경량화
 
-# 2️⃣ 30분마다 webapps/ROOT/* 삭제하는 cron 등록
-RUN echo '*/30 * * * * root rm -rf /usr/local/tomcat/webapps/ROOT/*' \
-      > /etc/cron.d/cleanup && \
-    chmod 0644 /etc/cron.d/cleanup && \
-    crontab /etc/cron.d/cleanup          # root 크론에 등록
-
-# 3️⃣ WAR 배포
+# 2️⃣ WAR 배포
 RUN rm -rf $CATALINA_HOME/webapps/*
 COPY --from=builder /app/build/libs/*.war $CATALINA_HOME/webapps/ROOT.war
 
-# 4️⃣ (선택) 플래그 파일
+# 3️⃣ 플래그 파일
 COPY flag.txt /flag.txt
 
 EXPOSE 8080
-# 5️⃣ cron + Tomcat 동시 실행
-CMD ["sh", "-c", "cron && catalina.sh run"]
+CMD ["catalina.sh", "run"]
