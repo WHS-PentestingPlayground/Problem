@@ -8,12 +8,18 @@ COPY gradle ./gradle
 COPY gradlew* ./
 # ── 소스 복사 ───────────────────────────────────────
 COPY src ./src
-COPY src/main/webapp ./src/main/webapp
 
 # ── CRLF 제거 & 빌드 ────────────────────────────────
 RUN chmod +x ./gradlew && \
     apt-get update && apt-get install -y dos2unix && \
+    # Convert only the gradlew script, not the entire directory
     dos2unix ./gradlew || sed -i 's/\r$//' ./gradlew && \
+    # Verify gradle wrapper jar exists and is accessible
+    ls -la ./gradle/wrapper/ && \
+    # Ensure gradle wrapper jar is executable
+    chmod +x ./gradle/wrapper/gradle-wrapper.jar && \
+    # Test gradle wrapper
+    ./gradlew --version && \
     ./gradlew clean war --no-daemon -x test
 
 #################### 🚀 Run Stage (cron 포함) #########
