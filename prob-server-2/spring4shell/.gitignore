@@ -79,7 +79,7 @@ application-dev.properties
 application-prod.properties
 
 # Docker
-.dockerignore
+# .dockerignore
 
 # Temporary files
 *.tmp
