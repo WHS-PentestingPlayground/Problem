@@ -64,8 +64,8 @@ buildNumber.properties
 
 # Java
 *.class
-*.jar
-*.war
+# *.jar
+# *.war
 *.ear
 *.zip
 *.tar.gz
