@@ -1,0 +1,9 @@
+services:
+  ssti-app:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - REAL_FLAG=VUL{S5ti_1s_W0rk!ng}
+    restart: unless-stopped
+    container_name: ssti-challenge 

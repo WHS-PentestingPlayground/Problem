@@ -1,51 +1,58 @@
 services:
-  prob1-mysql:
-    image: mysql
-    container_name: prob1-mysql-container
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: 1234
-      MYSQL_DATABASE: playground
-    networks:
-      - prob1-net
-    ports:
-      - "3307:3306"
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p1234"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  prob1-spring:
-    build:
-      context: ./FileUpload/playground
-      dockerfile: Dockerfile
-    container_name: prob1-spring-container
-    depends_on:
-      prob1-mysql:
-        condition: service_healthy  
-    networks:
-      - prob1-net
-    ports:
-      - "8080:8080"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://prob1-mysql:3306/playground?serverTimezone=Asia/Seoul
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: 1234
-      FLAG: FLAG{this_is_test_flag}
-
-  prob2-flask:
-    build:
-      context: ./FileDownload
-      dockerfile: Dockerfile
-    container_name: prob2-flask-container
-    networks:
-      - prob2-net
+  prob5-ssti:
+    build: ./ssti
     ports:
       - "5000:5000"
+    environment:
+      - REAL_FLAG=VUL{S5ti_1s_W0rk!ng}
+    restart: unless-stopped
+    container_name: ssti-challenge
+
+  prob6-sqlinjection:
+    build: ./SQLi
+    ports:
+      - "5001:5000"
+    depends_on:
+      - prob6-sqlinjection-db
+    environment:
+      - DB_HOST=prob6-sqlinjection-db
+      - DB_USER=whsRoot
+      - DB_PASSWORD=Rootpass123
+      - DB_NAME=sqli_lab
+    volumes:
+      - ./SQLi/flag.txt:/app/flag.txt
+    networks:
+      - problem-network
+
+  prob6-sqlinjection-db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: Rootpass123
+    volumes:
+      - ./SQLi/init.sql:/docker-entrypoint-initdb.d/init.sql
+    container_name: sqli-mysql
+    networks:
+      - problem-network
+
+  prob7-spring4shell:
+    build:
+      context: ./spring4shell
+      dockerfile: Dockerfile
+    container_name: spring4shell
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    read_only: false
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp
+    environment:
+      - TZ=Asia/Seoul
+    volumes:
+      - ./spring4shell/logs:/usr/local/tomcat/logs
 
 networks:
-  prob1-net:
-    driver: bridge
-  prob2-net:
+  problem-network:
     driver: bridge
