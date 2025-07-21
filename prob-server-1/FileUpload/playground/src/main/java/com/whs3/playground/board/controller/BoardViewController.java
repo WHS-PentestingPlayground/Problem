@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -63,6 +64,7 @@ public class BoardViewController {
         return "redirect:/board/posts";
     }
 
+    @PreAuthorize("@boardService.isAuthor(#id, principal.username)")
     @GetMapping("/post/{id}")
     public String getPost(Model model, @PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails){ // URL입력에서 id=1이라고 안해도 id값으로 넣어줌
         model.addAttribute("post", boardService.getPost(id));
