@@ -9,4 +9,4 @@
 ### 📝 문제 설명
 간단한 ssti연습 문제입니다
 
-*배포할시 docker run -d -p 5000:5000 -e REAL_FLAG="VUL{REAL_FLAG} 형식으로 환경변수를 넣어 실행해야함"*  
+*배포할시 docker run -d -p 5000:5000 -e REAL_FLAG="VUL{REAL_FLAG}" 형식으로 환경변수를 넣어 실행해야함*  
